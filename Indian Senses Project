@@ -1,0 +1,78 @@
+select*from [Project / SENSES].dbo.[Data 1];
+
+select*from [Project / SENSES].dbo.data2;
+--number of rows into our dataset 
+
+select count(*) from [Project / SENSES]..[Data 1]
+select count(*) from [Project / SENSES]..data2
+
+--dataset for jharkhand and Bihar
+
+select*from [Project / SENSES]..[Data 1] where state in ( 'jharkhand' , 'Bihar')
+
+--population of India
+
+select sum ( population) as population from [Project / SENSES]..data2
+
+--avg growth 
+
+select avg(growth)*100 avg_growth from [Project / SENSES]..[Data 1];
+
+--avg sex ratio
+
+select State,round(avg(Sex_Ratio),0) avg_sex_ratio from [Project / SENSES]..[Data 1] group by State order by avg_sex_ratio desc;
+;
+--avg literacy rate
+
+select State,round(avg(Literacy),0) avg_sex_ratio from [Project / SENSES]..[Data 1] 
+group by State having round(avg(literacy),0)>90 order by avg_literacy_rate desc;
+
+--top 3 state showing highest growth ratio
+
+select top 3 state,avg(growth)*100 avg_growth from [Project / SENSES]..[Data 1] group by state order by avg_growth desc;
+
+--bottom 3 state showing lowest sex ratio
+select top 3 State,round(avg(Sex_Ratio),0) avg_sex_ratio from [Project / SENSES]..[Data 1] group by state order by avg_sex_ratio asc;
+
+--top and bottom 3 states in literacy state
+
+drop table if exists #topstates;
+create table #topstates
+(state nvarchar(255),
+topstates float
+)
+insert into #topstates
+select State,round(avg(Literacy),0) avg_literacy_rate from [Project / SENSES]..[Data 1] 
+group by State order by avg_literacy_rate desc;
+
+select top 3 *from #topstates order by #topstates.topstates desc;
+
+-top and bottom 3 states in literacy state
+
+drop table if exists #bottomstate;
+create table #bottomstate
+(state nvarchar(255),
+bottomstate float
+)
+insert into #bottomstate
+select State,round(avg(Literacy),0) avg_literacy_rate from [Project / SENSES]..[Data 1] 
+group by State order by avg_literacy_rate desc;
+
+select top 3 *from #bottomstate order by #bottomstate.bottomstate asc;
+
+--union operator
+
+select*from (
+select top 3* from #topstates order by #topstates.topstates desc) a
+
+Union
+
+select *from (
+select top 3 *from #bottomstate order by #bottomstate.bottomstate asc) b;
+
+
+--states starting with letter a
+
+select distinct state from [Project / SENSES]..[Data 1] where lower(state) like 'a%' or lower (state) like 'b%'
+
+
